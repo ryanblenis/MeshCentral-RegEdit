@@ -1,0 +1,1259 @@
+<html>
+<head></head>
+<style>
+#pluginRegeditContent {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px;
+    padding: 0;
+    margin: 0;
+}
+
+#pluginRegeditContent .reg-container {
+    display: flex;
+    height: 680px;
+    border: 1px solid #ccc;
+    overflow: hidden;
+}
+
+#pluginRegeditContent .reg-tree-panel {
+    width: 30%;
+    min-width: 200px;
+    max-width: 50%;
+    border-right: 1px solid #ccc;
+    background: #f5f5f5;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+#pluginRegeditContent .reg-values-panel {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: auto;
+    padding: 10px;
+}
+
+#pluginRegeditContent .reg-toolbar {
+    padding: 8px;
+    background: #e8e8e8;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+#pluginRegeditContent .reg-toolbar button {
+    padding: 5px 12px;
+    cursor: pointer;
+    background: #fff;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    font-size;
+}
+
+#pluginRegeditContent .reg-toolbar button.danger {
+    color: #c00;
+}
+
+#pluginRegeditContent .reg-breadcrumb {
+    padding: 8px;
+    background: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow-x: auto;
+}
+
+#pluginRegeditContent .reg-breadcrumb span {
+    cursor: pointer;
+    color: #0066cc;
+}
+
+#pluginRegeditContent .reg-breadcrumb span:hover {
+    text-decoration: underline;
+}
+
+#pluginRegeditContent .reg-breadcrumb .separator {
+    margin: 0 5px;
+    color: #888;
+}
+
+#pluginRegeditContent .reg-tree-node {
+    padding: 4px 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+#pluginRegeditContent .reg-tree-node:hover {
+    background: #ddd;
+}
+
+#pluginRegeditContent .reg-tree-node.selected > .expand-icon,
+#pluginRegeditContent .reg-tree-node.selected {
+    background: transparent;
+    color: #0066cc;
+    outline: 1px solid #0066cc;
+}
+
+#pluginRegeditContent .reg-tree-node .expand-icon {
+    display: inline-block;
+    width: 16px;
+    text-align: center;
+    margin-right: 4px;
+}
+
+#pluginRegeditContent .reg-tree-children {
+    padding-left: 20px;
+}
+
+#pluginRegeditContent .reg-values-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+#pluginRegeditContent .reg-values-table th {
+    background: #e8e8e8;
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #aaa;
+    font-weight: 600;
+}
+
+#pluginRegeditContent .reg-values-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #eee;
+}
+
+#pluginRegeditContent .reg-values-table tr:hover {
+    background: #f5f5f5;
+}
+
+#pluginRegeditContent .reg-values-table .value-name {
+    font-weight: 500;
+    color: #333;
+}
+
+#pluginRegeditContent .reg-values-table .value-type {
+    color: #666;
+    font-size: 11px;
+}
+
+#pluginRegeditContent .reg-values-table .value-data {
+    font-family: "Courier New", monospace;
+    word-break: break-all;
+}
+
+#pluginRegeditContent .reg-loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+#pluginRegeditContent .reg-error {
+    color: #c00;
+    padding: 10px;
+    background: #fee;
+    border: 1px solid #c00;
+    margin: 10px;
+    border-radius: 3px;
+}
+
+#pluginRegeditContent .reg-success {
+    color: #060;
+    padding: 10px;
+    background: #efe;
+    border: 1px solid #060;
+    margin: 10px;
+    border-radius: 3px;
+}
+
+#pluginRegeditContent .reg-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#pluginRegeditContent .reg-dialog-overlay.active {
+    display: flex;
+}
+
+#pluginRegeditContent .reg-dialog {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    min-width: 400px;
+    max-width: 600px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+}
+
+#pluginRegeditContent .reg-dialog h3 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+#pluginRegeditContent .reg-dialog .form-group {
+    margin-bottom: 15px;
+}
+
+#pluginRegeditContent .reg-dialog label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+#pluginRegeditContent .reg-dialog input,
+#pluginRegeditContent .reg-dialog select,
+#pluginRegeditContent .reg-dialog textarea {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+#pluginRegeditContent .reg-dialog textarea {
+    font-family: "Courier New", monospace;
+    min-height: 100px;
+    resize: vertical;
+}
+
+#pluginRegeditContent .reg-dialog-buttons {
+    text-align: right;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+}
+
+#pluginRegeditContent .reg-dialog-buttons button {
+    padding: 6px 15px;
+    cursor: pointer;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    margin-left: 5px;
+}
+
+#pluginRegeditContent .reg-dialog-buttons button.primary {
+    background: #0066cc;
+    color: white;
+    border-color: #0055aa;
+}
+
+#pluginRegeditContent .reg-dialog-buttons button.primary:hover {
+    background: #0055aa;
+}
+
+#pluginRegeditContent .reg-context-menu {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+    min-width: 120px;
+}
+
+#pluginRegeditContent .reg-context-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+#pluginRegeditContent .reg-context-item:hover {
+    background: #e0e0e0;
+}
+</style>
+<body onload="doOnLoad()">
+<div id="pluginRegeditContent">
+    <div class="reg-toolbar">
+        <button onclick="return regedit.importBranch();">Import .reg</button>
+    </div>
+    
+    <div class="reg-breadcrumb" id="reg-breadcrumb">
+        <span onclick="return regedit.navigateToHives();">Hives</span>
+    </div>
+    
+    <div class="reg-container">
+        <div class="reg-tree-panel" id="reg-tree">
+            <!-- Tree will be populated here -->
+        </div>
+        <div class="reg-values-panel" id="reg-values">
+            <div class="reg-loading">Select a key to view its values</div>
+        </div>
+    </div>
+    
+    <!-- Context Menu -->
+    <div class="reg-context-menu" id="reg-context-menu" style="display: none;">
+        <div class="reg-context-item" data-action="newKey">New Key</div>
+        <div class="reg-context-item" data-action="newValue">New Value</div>
+        <div class="reg-context-item" data-action="export">Export</div>
+        <div class="reg-context-item" data-action="edit">Edit Value</div>
+        <div class="reg-context-item" data-action="rename">Rename</div>
+        <div class="reg-context-item" data-action="delete">Delete</div>
+        <div class="reg-context-item" data-action="refresh">Refresh</div>
+    </div>
+    
+    <!-- Dialog -->
+    <div class="reg-dialog-overlay" id="reg-dialog-overlay"></div>
+    <div class="reg-dialog" id="reg-dialog"></div>
+</div>
+</body>
+<script>
+var regedit = (function() {
+    var currentHive = null;
+    var currentPath = '';
+    var hives = {
+        'HKEY_LOCAL_MACHINE': 'HKLM',
+        'HKEY_CURRENT_USER': 'HKCU',
+        'HKEY_CLASSES_ROOT': 'HKCR',
+        'HKEY_USERS': 'HKU',
+        'HKEY_CURRENT_CONFIG': 'HKCC'
+    };
+    var pendingOperation = null;
+    var currentValues = {}; // Store current values for edit context
+    var uSids = null;
+
+    function init() {
+        loadHives();
+        // Hide dialog on init
+        var overlay = document.getElementById('reg-dialog-overlay');
+        var dialog = document.getElementById('reg-dialog');
+        overlay.style.display = 'none';
+        dialog.style.display = 'none';
+        
+        // Add escape key handler to close dialogs and context menus
+        document.addEventListener('keydown', function(e) {
+            var overlay = document.getElementById('reg-dialog-overlay');
+            if (!overlay.classList.contains('active')) {
+                if (e.key === 'Escape') {
+                    hideContextMenu();
+                }
+                return;
+            }
+            
+            if (e.key === 'Escape') {
+                closeDialog();
+            } else if (e.key === 'Enter') {
+                var activeElem = document.activeElement;
+                if (activeElem && activeElem.tagName === 'TEXTAREA') {
+                    return;
+                }
+                submitDialog();
+            }
+        });
+    }
+
+    function loadHives() {
+        var tree = document.getElementById('reg-tree');
+        tree.innerHTML = '';
+        
+        for (var key in hives) {
+            var node = document.createElement('div');
+            node.className = 'reg-tree-node';
+            node.dataset.hive = hives[key];
+            node.dataset.path = '';
+            node.innerHTML = '<span class="expand-icon">+</span>' + key;
+            
+            // Only attach click handler to expand icon
+            var expandIcon = node.querySelector('.expand-icon');
+            expandIcon.onclick = function(e) {
+                e.stopPropagation();
+                selectHive(this.parentNode.dataset.hive, '');
+            };
+            
+            node.onclick = function(e) {
+                if (e.target === this.querySelector('.expand-icon')) return; // Ignore if clicking expand icon
+                e.preventDefault();
+                e.stopPropagation();
+                // Handle left-click for selection
+                selectHive(this.dataset.hive, '');
+                // Handle right-click for context menu
+                if (e.button === 2) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    showContextMenu(e, 'key', { name: key, path: '' });
+                }
+            };
+            node.oncontextmenu = function(e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                showContextMenu(e, 'key', { name: key, path: '' });
+            };
+            tree.appendChild(node);
+        }
+        
+        updateBreadcrumb();
+        document.getElementById('reg-values').innerHTML = '<div class="reg-loading">Select a hive to browse</div>';
+    }
+
+    function selectHive(hive, path) {
+        // Debug
+        //console.log('selectHive called: hive=' + hive + ', path=' + path);
+        
+        currentHive = hive;
+        currentPath = path;
+        
+        // Update tree selection - remove from all nodes first
+        var allNodes = document.querySelectorAll('.reg-tree-node');
+        for (var i = 0; i < allNodes.length; i++) {
+            allNodes[i].classList.remove('selected');
+        }
+        
+        // Escape backslashes for CSS selector (CSS uses backslash as escape character)
+        // Handle both single and double backslashes (breadcrumb vs tree click)
+        var escapedPath = path.replace(/\\/g, '\\\\');
+        
+        // Find and select the node with this specific hive and path
+        var selectedNode = null;
+        var allMatchingNodes = document.querySelectorAll('.reg-tree-node[data-hive="' + hive + '"][data-path="' + escapedPath + '"]');
+        
+        // If not found, try with single backslash (in case path already had double backslashes)
+        if (allMatchingNodes.length === 0 && path !== escapedPath) {
+            allMatchingNodes = document.querySelectorAll('.reg-tree-node[data-hive="' + hive + '"][data-path="' + path + '"]');
+        }
+        
+        if (allMatchingNodes.length > 0) {
+            // Get the last one (most deeply nested)
+            selectedNode = allMatchingNodes[allMatchingNodes.length - 1];
+            selectedNode.classList.add('selected');
+        }
+        
+        //console.log('Found matching nodes: ' + allMatchingNodes.length + ', selected: ' + (selectedNode ? 'yes' : 'no'));
+        
+        updateBreadcrumb();
+        loadKey(hive, path);
+    }
+
+    function updateBreadcrumb() {
+        var breadcrumb = document.getElementById('reg-breadcrumb');
+        var html = '<span onclick="return regedit.navigateToHives();">Hives</span>';
+        
+        if (currentHive) {
+            html += ' <span class="separator">&gt;</span> ';
+            html += '<span onclick="return regedit.selectHive(\'' + currentHive + '\', \'\');">' + currentHive + '</span>';
+            
+        if (currentPath) {
+            var parts = currentPath.split('\\');
+            var buildPath = '';
+            parts.forEach(function(part, idx) {
+                if (buildPath) buildPath += '\\';
+                buildPath += part;
+                html += ' <span class="separator">&gt;</span> ';
+                var escapedBuildPath = buildPath.replace(/\\/g, '\\\\');
+                html += '<span onclick="return regedit.selectHive(\'' + currentHive + '\', \'' + escapedBuildPath + '\');">' + part + '</span>';
+            });
+        }
+        }
+        
+        breadcrumb.innerHTML = html;
+    }
+
+    function navigateToHives() {
+        currentHive = null;
+        currentPath = '';
+        loadHives();
+    }
+
+    function loadKey(hive, path) {
+        var valuesPanel = document.getElementById('reg-values');
+        valuesPanel.innerHTML = '<div class="reg-loading">Loading...</div>';
+        if (uSids === null) {
+            parent.meshserver.send({
+                action: 'plugin',
+                plugin: 'regedit',
+                pluginaction: 'userSidsToProfiles',
+                nodeid: parent.currentNode._id
+            });
+        }
+        parent.meshserver.send({
+            action: 'plugin',
+            plugin: 'regedit',
+            pluginaction: 'enumKey',
+            hive: hive,
+            path: path || '',
+            nodeid: parent.currentNode._id
+        });
+    }
+    function updateUsids(message) {
+        uSids = [];
+        message.data.map(function(item) {
+            uSids[item.SID] = item.Username;
+        });
+    }
+    function handleMessage(message) {
+        var data = message;
+        
+        if (data.method2 === 'enumKey') {
+            handleEnumKeyResponse(data);
+        } else if (data.method2 === 'setValue') {
+            handleSetValueResponse(data);
+        } else if (data.method2 === 'createKey') {
+            handleCreateKeyResponse(data);
+        } else if (data.method2 === 'renameKey') {
+            handleRenameKeyResponse(data);
+        } else if (data.method2 === 'deleteKey') {
+            handleDeleteKeyResponse(data);
+        } else if (data.method2 === 'deleteValue') {
+            handleDeleteValueResponse(data);
+        } else if (data.method2 === 'exportBranch') {
+            handleExportResponse(data);
+        } else if (data.method2 === 'importBranch') {
+            handleImportResponse(data);
+        }
+    }
+
+    function handleEnumKeyResponse(data) {
+        //console.log('handleEnumKeyResponse called', data);
+        var valuesPanel = document.getElementById('reg-values');
+        
+        if (!data.success) {
+            valuesPanel.innerHTML = '<div class="reg-error">' + (data.error || 'Error loading key') + '</div>';
+            return;
+        }
+        
+        var result = data.data;
+        //console.log('Result keys:', result.keys, 'values:', result.values);
+        
+        // Update tree
+        updateTree(result.keys);
+        
+        // Show values
+        var html = '<table class="reg-values-table"><thead><tr><th>Name</th><th>Type</th><th>Data</th></tr></thead><tbody>';
+        
+        if (result.values) {
+            currentValues = result.values; // Store for edit context
+            for (var name in result.values) {
+                var val = result.values[name];
+                var displayData, valueType;
+                
+                // Handle different value formats from win-registry
+                if (typeof val === 'object' && val !== null) {
+                    // Object format: { value: "...", type: "..." }
+                    displayData = formatValueData(val);
+                    valueType = val.type || 'Unknown';
+                } else {
+                    // Simple format: "value" (just the string value, no type)
+                    displayData = escapeHtml(String(val));
+                    valueType = 'REG_SZ';
+                }
+                
+                html += '<tr class="value-row" data-name="' + escapeHtml(name) + '" data-type="' + escapeHtml(valueType) + '">';
+                html += '<td class="value-name">' + escapeHtml(name) + '</td>';
+                html += '<td class="value-type">' + escapeHtml(valueType) + '</td>';
+                html += '<td class="value-data">' + displayData + '</td>';
+                html += '</tr>';
+            }
+        }
+        
+        html += '</tbody></table>';
+        
+        if (result.keys && result.keys.length === 0 && (!result.values || Object.keys(result.values).length === 0)) {
+            html = '<div class="reg-loading">Empty key (no subkeys or values)</div>';
+        }
+        
+        valuesPanel.innerHTML = html;
+        
+        // Add right-click handler to value rows
+        var valueRows = valuesPanel.querySelectorAll('.value-row');
+        for (var i = 0; i < valueRows.length; i++) {
+            valueRows[i].oncontextmenu = function(e) {
+                e.preventDefault();
+                showContextMenu(e, 'value', { 
+                    name: this.dataset.name, 
+                    type: this.dataset.type 
+                });
+            };
+        }
+    }
+
+    function updateTree(keys) {
+        if (!keys || keys.length === 0) return;
+        
+        // Find the currently selected node (parent)
+        var selectedNode = document.querySelector('.reg-tree-node.selected');
+        if (!selectedNode) return;
+        
+        var expandIcon = selectedNode.querySelector('.expand-icon');
+        var childrenContainer = selectedNode.querySelector('.reg-tree-children');
+        
+        // If already expanded (icon is '-'), collapse it
+        if (childrenContainer && expandIcon && expandIcon.textContent === '-') {
+            selectedNode.removeChild(childrenContainer);
+            expandIcon.textContent = '+';
+            return;
+        }
+        
+        // Otherwise, expand and show children
+        if (expandIcon) {
+            expandIcon.textContent = '-';
+        }
+        
+        // Remove existing children if any (avoid duplicates)
+        if (childrenContainer) {
+            selectedNode.removeChild(childrenContainer);
+        }
+        
+        // Create new children container
+        childrenContainer = document.createElement('div');
+        childrenContainer.className = 'reg-tree-children';
+        
+        // Add child nodes for each key
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            var node = document.createElement('div');
+            node.className = 'reg-tree-node';
+            node.dataset.hive = currentHive;
+            node.dataset.path = currentPath ? currentPath + '\\' + key : key;
+            node.innerHTML = '<span class="expand-icon">+</span>' + key;
+            if (node.dataset.hive === 'HKU') {
+                if (typeof uSids[key] !== 'undefined') {
+                    try { node.innerHTML += ' ('+uSids[key]+')'; } catch(e) { };
+                }
+            }
+            // Only attach click handler to expand icon
+            var expandIcon = node.querySelector('.expand-icon');
+            expandIcon.onclick = function(e) {
+                e.stopPropagation();
+                selectHive(this.parentNode.dataset.hive, this.parentNode.dataset.path);
+            };
+            
+            node.onclick = function(e) {
+                if (e.target === this.querySelector('.expand-icon')) return; // Ignore if clicking expand icon
+                e.preventDefault();
+                e.stopPropagation();
+                // Handle left-click for selection
+                selectHive(this.dataset.hive, this.dataset.path);
+                // Handle right-click for context menu
+                if (e.button === 2) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    showContextMenu(e, 'key', { name: key, path: this.dataset.path });
+                }
+            };
+            node.oncontextmenu = function(e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                showContextMenu(e, 'key', { name: key, path: this.dataset.path });
+            };
+            childrenContainer.appendChild(node);
+        }
+        
+        selectedNode.appendChild(childrenContainer);
+    }
+
+    function formatValueData(val) {
+        // Handle null, undefined, or empty
+        if (val == null) return '';
+        
+        // If val is a string (simple format), return it directly
+        if (typeof val === 'string') {
+            if (val === '') return '';
+            return escapeHtml(val);
+        }
+        
+        // If val is an object, try to get .value property
+        var value = val.value;
+        var type = val.type;
+        
+        // Handle case where value is missing, null, undefined, or empty object
+        if (value == null || value === '') return '';
+        
+        // If value is still an object, convert to string
+        if (typeof value === 'object') {
+            return String(value);
+        }
+        
+        if (type === 'Binary' && Array.isArray(value)) {
+            return value.slice(0, 20).map(function(b) {
+                return ('0' + b.toString(16)).slice(-2);
+            }).join(' ') + (value.length > 20 ? '...' : '');
+        } else if (type === 'Integer') {
+            return '0x' + value.toString(16) + ' (' + value + ')';
+        } else if (type === 'LongInteger') {
+            return '0x' + value.toString(16) + ' (' + value + ')';
+        } else if (Array.isArray(value)) {
+            return value.join(', ');
+        }
+        
+        return escapeHtml(String(value));
+    }
+
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function refresh() {
+        if (currentHive) {
+            loadKey(currentHive, currentPath);
+        } else {
+            loadHives();
+        }
+    }
+
+    function newKey() {
+        if (!currentHive) {
+            alert('Please select a hive first');
+            return;
+        }
+        
+        showDialog('New Key', [
+            { label: 'Key Name', name: 'keyName', type: 'text', value: '' }
+        ], function(values) {
+            var newPath = currentPath ? currentPath + '\\' + values.keyName : values.keyName;
+            
+            parent.meshserver.send({
+                action: 'plugin',
+                plugin: 'regedit',
+                pluginaction: 'createKey',
+                hive: currentHive,
+                path: newPath,
+                nodeid: parent.currentNode._id
+            });
+            
+            pendingOperation = { type: 'createKey', path: newPath };
+        });
+    }
+
+    function newValue() {
+        if (!currentHive || !currentPath) {
+            alert('Please select a key first');
+            return;
+        }
+        
+        showDialog('New Value', [
+            { label: 'Value Name', name: 'valueName', type: 'text', value: '' },
+            { label: 'Type', name: 'valueType', type: 'select', options: ['REG_SZ', 'REG_EXPAND_SZ', 'REG_DWORD', 'REG_QWORD', 'REG_BINARY', 'REG_MULTI_SZ'], value: 'REG_SZ' },
+            { label: 'Data', name: 'valueData', type: 'textarea', value: '' }
+        ], function(values) {
+            parent.meshserver.send({
+                action: 'plugin',
+                plugin: 'regedit',
+                pluginaction: 'setValue',
+                hive: currentHive,
+                path: currentPath,
+                name: values.valueName,
+                type: values.valueType,
+                data: values.valueData,
+                nodeid: parent.currentNode._id
+            });
+            
+            pendingOperation = { type: 'setValue' };
+        });
+    }
+
+    function editValue(name, currentData, currentType) {
+        if (!currentHive || !currentPath) return;
+        
+        showDialog('Edit Value', [
+            { label: 'Value Name', name: 'valueName', type: 'text', value: name, readonly: false },
+            { label: 'Type', name: 'valueType', type: 'select', options: ['REG_SZ', 'REG_EXPAND_SZ', 'REG_DWORD', 'REG_QWORD', 'REG_BINARY', 'REG_MULTI_SZ'], value: currentType || 'REG_SZ' },
+            { label: 'Data', name: 'valueData', type: 'textarea', value: currentData || '' }
+        ], function(values) {
+            parent.meshserver.send({
+                action: 'plugin',
+                plugin: 'regedit',
+                pluginaction: 'setValue',
+                hive: currentHive,
+                path: currentPath,
+                name: values.valueName,
+                type: values.valueType,
+                data: values.valueData,
+                oldName: name,
+                oldType: currentType,
+                nodeid: parent.currentNode._id
+            });
+        });
+    }
+
+    function deleteKey() {
+        if (!currentHive || !currentPath) {
+            alert('Please select a key first');
+            return;
+        }
+        
+        if (!confirm('Are you sure you want to delete this key and all its contents?')) {
+            return;
+        }
+        
+        parent.meshserver.send({
+            action: 'plugin',
+            plugin: 'regedit',
+            pluginaction: 'deleteKey',
+            hive: currentHive,
+            path: currentPath,
+            nodeid: parent.currentNode._id
+        });
+        
+        pendingOperation = { type: 'deleteKey' };
+    }
+
+    function exportBranch() {
+        if (!currentHive || !currentPath) {
+            alert('Please select a key first');
+            return;
+        }
+        
+        parent.meshserver.send({
+            action: 'plugin',
+            plugin: 'regedit',
+            pluginaction: 'exportBranch',
+            hive: currentHive,
+            path: currentPath,
+            nodeid: parent.currentNode._id
+        });
+    }
+
+    function importBranch() {
+        var overlay = document.getElementById('reg-dialog-overlay');
+        var dialog = document.getElementById('reg-dialog');
+        
+        var html = '<h3>Import Registry</h3>';
+        html += '<div class="form-group">';
+        html += '<label>Upload .reg file</label>';
+        html += '<input type="file" id="reg-import-file" accept=".reg" onchange="regedit.handleImportFile(this)">';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label>Or paste .reg content</label>';
+        html += '<textarea id="dialog-regData" rows="10" placeholder="Paste registry content here..."></textarea>';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label>Target Key (leave empty for root)</label>';
+        html += '<input type="text" id="dialog-targetPath" value="">';
+        html += '</div>';
+        html += '<div class="reg-dialog-buttons">';
+        html += '<button onclick="return regedit.closeDialog();">Cancel</button>';
+        html += '<button class="primary" onclick="return regedit.submitImport();">Import</button>';
+        html += '</div>';
+        
+        dialog.innerHTML = html;
+        overlay.classList.add('active');
+        overlay.style.display = 'flex';
+        dialog.style.display = 'block';
+    }
+    
+    function handleImportFile(input) {
+        var file = input.files[0];
+        if (!file) return;
+        
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var textarea = document.getElementById('dialog-regData');
+            if (textarea) {
+                textarea.value = e.target.result;
+            }
+        };
+        reader.readAsText(file);
+    }
+    
+    function submitImport() {
+        var regData = document.getElementById('dialog-regData').value;
+        var targetPath = document.getElementById('dialog-targetPath').value;
+        
+        if (!regData) {
+            alert('Please provide registry data');
+            return;
+        }
+        
+        closeDialog();
+        
+        // Parse .reg file content and send to agent
+        parent.meshserver.send({
+            action: 'plugin',
+            plugin: 'regedit',
+            pluginaction: 'importBranch',
+            hive: currentHive,
+            path: targetPath || currentPath || '',
+            content: regData,
+            nodeid: parent.currentNode._id
+        });
+    }
+
+    function handleSetValueResponse(data) {
+        //console.log('handleSetValueResponse called:', data);
+        var valuesPanel = document.getElementById('reg-values');
+        
+        if (data.success) {
+            //console.log('SetValue successful, refreshing...');
+            valuesPanel.innerHTML = '<div class="reg-success">Value saved successfully</div>';
+            setTimeout(refresh, 700);
+        } else {
+            //console.log('SetValue failed:', data.error);
+            valuesPanel.innerHTML = '<div class="reg-error">' + (data.error || 'Error saving value') + '</div>';
+        }
+    }
+
+    function handleCreateKeyResponse(data) {
+        if (data.success) {
+            refresh();
+        } else {
+            alert('Error creating key: ' + (data.error || 'Unknown error'));
+        }
+    }
+
+    function handleRenameKeyResponse(data) {
+        if (data.success) {
+            var newPath = data.data.newPath;
+            var oldPath = data.data.oldPath;
+            
+            // Navigate to the parent to refresh the list of keys
+            var parentPath = newPath.split('\\').slice(0, -1).join('\\');
+            selectHive(currentHive, parentPath);
+        } else {
+            alert('Error renaming key: ' + (data.error || 'Unknown error'));
+        }
+    }
+
+    function handleDeleteKeyResponse(data) {
+        if (data.success) {
+            // Navigate to parent
+            var parentPath = currentPath.split('\\').slice(0, -1).join('\\');
+            selectHive(currentHive, parentPath);
+        } else {
+            alert('Error deleting key: ' + (data.error || 'Unknown error'));
+        }
+    }
+
+    function handleDeleteValueResponse(data) {
+        if (data.success) {
+            refresh();
+        } else {
+            alert('Error deleting value: ' + (data.error || 'Unknown error'));
+        }
+    }
+    
+    function handleExportResponse(data) {
+        //console.log('handleExportResponse:', data);
+        if (!data.success) {
+            alert('Error exporting: ' + (data.error || 'Unknown error'));
+            return;
+        }
+        
+        //console.log('data.data:', data.data);
+        var content = data.data && data.data.content ? data.data.content : JSON.stringify(data.data);
+        
+        // Create download
+        var blob = new Blob([content], { type: 'text/plain' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = currentPath.split('\\').pop() + '.reg';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function handleImportResponse(data) {
+        var valuesPanel = document.getElementById('reg-values');
+        
+        if (data.success) {
+            valuesPanel.innerHTML = '<div class="reg-success">Registry imported successfully</div>';
+            setTimeout(refresh, 700);
+        } else {
+            valuesPanel.innerHTML = '<div class="reg-error">' + (data.error || 'Error importing registry') + '</div>';
+        }
+    }
+
+    function showDialog(title, fields, callback) {
+        //('showDialog called:', title);
+        var overlay = document.getElementById('reg-dialog-overlay');
+        var dialog = document.getElementById('reg-dialog');
+        
+        //console.log('Overlay element:', overlay, 'Dialog element:', dialog);
+        
+        var html = '<h3>' + title + '</h3>';
+        
+        fields.forEach(function(field) {
+            html += '<div class="form-group">';
+            html += '<label>' + field.label + '</label>';
+            
+            if (field.type === 'select') {
+                html += '<select id="dialog-' + field.name + '">';
+                (field.options || []).forEach(function(opt) {
+                    html += '<option value="' + opt + '"' + (opt === field.value ? ' selected' : '') + '>' + opt + '</option>';
+                });
+                html += '</select>';
+            } else if (field.type === 'textarea') {
+                html += '<textarea id="dialog-' + field.name + '">' + escapeHtml(field.value) + '</textarea>';
+            } else {
+                html += '<input type="text" id="dialog-' + field.name + '" value="' + escapeHtml(field.value) + '"' + (field.readonly ? ' readonly' : '') + '>';
+            }
+            
+            html += '</div>';
+        });
+        
+        html += '<div class="reg-dialog-buttons">';
+        html += '<button onclick="return regedit.closeDialog();">Cancel</button>';
+        html += '<button class="primary" onclick="return regedit.submitDialog();">OK</button>';
+        html += '</div>';
+        
+        dialog.innerHTML = html;
+        dialog.dataset.callback = '';
+        
+        // Store the callback
+        window._regeditDialogCallback = callback;
+        window._regeditDialogFields = fields;
+        
+        overlay.classList.add('active');
+        overlay.style.display = 'flex';
+        dialog.style.display = 'block';
+    }
+
+    function closeDialog() {
+        var overlay = document.getElementById('reg-dialog-overlay');
+        var dialog = document.getElementById('reg-dialog');
+        overlay.classList.remove('active');
+        overlay.style.display = 'none';
+        dialog.style.display = 'none';
+        window._regeditDialogCallback = null;
+        window._regeditDialogFields = null;
+    }
+
+    function submitDialog() {
+        var fields = window._regeditDialogFields;
+        var callback = window._regeditDialogCallback;
+        var values = {};
+        
+        fields.forEach(function(field) {
+            var elem = document.getElementById('dialog-' + field.name);
+            values[field.name] = elem.value;
+        });
+        
+        closeDialog();
+        callback(values);
+    }
+
+    // Context menu functionality
+    var contextMenuTarget = null;
+    var contextMenuType = null; // 'key' or 'value'
+    
+    function showContextMenu(e, targetType, targetData) {
+        e.preventDefault();
+        contextMenuTarget = targetData;
+        contextMenuType = targetType;
+        
+        var menu = document.getElementById('reg-context-menu');
+        menu.style.display = 'block';
+        menu.style.left = e.pageX + 'px';
+        menu.style.top = e.pageY + 'px';
+        
+        // Hide items based on context
+        var items = menu.querySelectorAll('.reg-context-item');
+        items.forEach(function(item) {
+            var action = item.dataset.action;
+            if (targetType === 'key' && action === 'edit') {
+                item.style.display = 'none';
+            } else if (targetType === 'value' && action === 'rename') {
+                item.style.display = 'none';
+            } else {
+                item.style.display = 'block';
+            }
+        });
+    }
+    
+    function hideContextMenu() {
+        var menu = document.getElementById('reg-context-menu');
+        menu.style.display = 'none';
+        contextMenuTarget = null;
+        contextMenuType = null;
+    }
+    
+    function handleContextMenuAction(action) {
+        //console.log('handleContextMenuAction called:', action, 'contextMenuType:', contextMenuType, 'contextMenuTarget:', contextMenuTarget);
+        
+        // Save target before hiding since document click clears it
+        var target = contextMenuTarget;
+        var targetType = contextMenuType;
+        hideContextMenu();
+        
+        switch (action) {
+            case 'newKey':
+                if (!currentHive) {
+                    alert('Please select a hive first');
+                    return;
+                }
+                showDialog('New Key', [
+                    { label: 'Key Name', name: 'keyName', type: 'text', value: '' }
+                ], function(values) {
+                    var newPath = currentPath ? currentPath + '\\' + values.keyName : values.keyName;
+                    parent.meshserver.send({
+                        action: 'plugin',
+                        plugin: 'regedit',
+                        pluginaction: 'createKey',
+                        hive: currentHive,
+                        path: newPath,
+                        nodeid: parent.currentNode._id
+                    });
+                    pendingOperation = { type: 'createKey', path: newPath };
+                });
+                break;
+            case 'newValue':
+                if (!currentHive || !currentPath) {
+                    alert('Please select a key first');
+                    return;
+                }
+                showDialog('New Value', [
+                    { label: 'Value Name', name: 'valueName', type: 'text', value: '' },
+                    { label: 'Type', name: 'valueType', type: 'select', options: ['REG_SZ', 'REG_EXPAND_SZ', 'REG_DWORD', 'REG_QWORD', 'REG_BINARY', 'REG_MULTI_SZ'], value: 'REG_SZ' },
+                    { label: 'Data', name: 'valueData', type: 'textarea', value: '' }
+                ], function(values) {
+                    parent.meshserver.send({
+                        action: 'plugin',
+                        plugin: 'regedit',
+                        pluginaction: 'setValue',
+                        hive: currentHive,
+                        path: currentPath,
+                        name: values.valueName,
+                        type: values.valueType,
+                        data: values.valueData,
+                        nodeid: parent.currentNode._id
+                    });
+                    pendingOperation = { type: 'setValue' };
+                });
+                break;
+            case 'export':
+                // Use target path if right-clicked on a key, otherwise use currentPath
+                var exportPath = (target && target.path) ? target.path : currentPath;
+                if (!currentHive || !exportPath) {
+                    alert('Please select a key first');
+                    return;
+                }
+                parent.meshserver.send({
+                    action: 'plugin',
+                    plugin: 'regedit',
+                    pluginaction: 'exportBranch',
+                    hive: currentHive,
+                    path: exportPath,
+                    nodeid: parent.currentNode._id
+                });
+                break;
+            case 'edit':
+                if (targetType === 'value') {
+                    var valObj = currentValues[target.name];
+                    var curData = (valObj && valObj.value) ? valObj.value : '';
+                    var curType = (valObj && valObj.type) ? valObj.type : 'REG_SZ';
+                    editValue(target.name, curData, curType);
+                }
+                break;
+            case 'rename':
+                //console.log('Rename case reached, target:', target);
+                if (targetType === 'key') {
+                    var keyName = target.path.split('\\').pop();
+                    //('Showing rename dialog for:', keyName);
+                    showDialog('Rename Key', [
+                        { label: 'New Key Name', name: 'newKeyName', type: 'text', value: keyName }
+                    ], function(values) {
+                        //console.log('Rename dialog submitted:', values);
+                        var parentPath = target.path.split('\\').slice(0, -1).join('\\');
+                        var newPath = parentPath ? parentPath + '\\' + values.newKeyName : values.newKeyName;
+                        
+                        parent.meshserver.send({
+                            action: 'plugin',
+                            plugin: 'regedit',
+                            pluginaction: 'renameKey',
+                            hive: currentHive,
+                            oldPath: target.path,
+                            newPath: newPath,
+                            nodeid: parent.currentNode._id
+                        });
+                    });
+                }
+                break;
+            case 'delete':
+                if (targetType === 'key') {
+                    if (confirm('Are you sure you want to delete this key and all its contents?')) {
+                        parent.meshserver.send({
+                            action: 'plugin',
+                            plugin: 'regedit',
+                            pluginaction: 'deleteKey',
+                            hive: currentHive,
+                            path: target.path,
+                            nodeid: parent.currentNode._id
+                        });
+                    }
+                } else if (targetType === 'value') {
+                    if (confirm('Are you sure you want to delete this value?')) {
+                        parent.meshserver.send({
+                            action: 'plugin',
+                            plugin: 'regedit',
+                            pluginaction: 'deleteValue',
+                            hive: currentHive,
+                            path: currentPath,
+                            name: target.name,
+                            nodeid: parent.currentNode._id
+                        });
+                    }
+                }
+                break;
+            case 'refresh':
+                refresh();
+                break;
+        }
+    }
+    
+    // Add event listeners for right-click
+    document.addEventListener('click', hideContextMenu);
+    
+    // Context menu item clicks
+    document.getElementById('reg-context-menu').addEventListener('click', function(e) {
+        e.stopPropagation();
+        //console.log('Context menu clicked:', e.target.classList.contains('reg-context-item'), e.target.dataset.action);
+        if (e.target.classList.contains('reg-context-item')) {
+            handleContextMenuAction(e.target.dataset.action);
+        }
+    });
+
+    // Initialize
+    init();
+
+    // Return public API
+    return {
+        selectHive: selectHive,
+        navigateToHives: navigateToHives,
+        refresh: refresh,
+        newKey: newKey,
+        newValue: newValue,
+        editValue: editValue,
+        deleteKey: deleteKey,
+        exportBranch: exportBranch,
+        importBranch: importBranch,
+        handleImportFile: handleImportFile,
+        submitImport: submitImport,
+        closeDialog: closeDialog,
+        submitDialog: submitDialog,
+        handleMessage: handleMessage,
+        updateUsids: updateUsids
+    };
+})();
+
+// Register message handler
+function doOnLoad() {
+    parent.pluginHandler.regedit.loadKeyData = function(x, message) {
+        //console.log('Received message for loadKeyData:', message);
+        regedit.handleMessage(message);
+    }
+    parent.pluginHandler.regedit.loadUsidData = function(x, message) {
+        //console.log('Received message for loadUsidData:', message);
+        regedit.updateUsids(message);
+    }
+}
+</script>
+</html>
