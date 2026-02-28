@@ -6,7 +6,7 @@
   "description": "Windows Registry Explorer and Editor for MeshCentral",
   "hasAdminPanel": false,
   "homepage": "https://github.com/ryanblenis/MeshCentral-RegEdit",
-  "changelogUrl": "https://raw.githubusercontent.com/ryanblenis/MeshCentral-RegEdit/master/changelog.md",
+  "changelogUrl": "https://raw.githubusercontent.com/ryanblenis/MeshCentral-RegEdit/master/CHANGELOG.md",
   "configUrl": "https://raw.githubusercontent.com/ryanblenis/MeshCentral-RegEdit/master/config.json",
   "downloadUrl": "https://github.com/ryanblenis/MeshCentral-RegEdit/archive/master.zip",
   "repository": {
