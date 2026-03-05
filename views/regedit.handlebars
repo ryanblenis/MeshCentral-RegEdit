@@ -325,6 +325,17 @@ var regedit = (function() {
     var currentValues = {}; // Store current values for edit context
     var uSids = null;
 
+    function getDirectChildrenContainer(node) {
+        if (!node || !node.children) return null;
+        for (var i = 0; i < node.children.length; i++) {
+            var child = node.children[i];
+            if (child.classList && child.classList.contains('reg-tree-children')) {
+                return child;
+            }
+        }
+        return null;
+    }
+
     function init() {
         loadHives();
         // Hide dialog on init
@@ -622,6 +633,13 @@ var regedit = (function() {
             var expandIcon = node.querySelector('.expand-icon');
             expandIcon.onclick = function(e) {
                 e.stopPropagation();
+                var iconState = (this.textContent || '').trim();
+                var childrenContainer = getDirectChildrenContainer(this.parentNode);
+                if (iconState === '-' && childrenContainer) {
+                    this.parentNode.removeChild(childrenContainer);
+                    this.textContent = '+';
+                    return;
+                }
                 selectHive(this.parentNode.dataset.hive, this.parentNode.dataset.path);
             };
             
@@ -889,7 +907,7 @@ var regedit = (function() {
         if (data.success) {
             //console.log('SetValue successful, refreshing...');
             valuesPanel.innerHTML = '<div class="reg-success">Value saved successfully</div>';
-            setTimeout(refresh, 700);
+            //setTimeout(refresh, 700);
         } else {
             //console.log('SetValue failed:', data.error);
             valuesPanel.innerHTML = '<div class="reg-error">' + (data.error || 'Error saving value') + '</div>';
@@ -962,7 +980,7 @@ var regedit = (function() {
         
         if (data.success) {
             valuesPanel.innerHTML = '<div class="reg-success">Registry imported successfully</div>';
-            setTimeout(refresh, 700);
+            //setTimeout(refresh, 700);
         } else {
             valuesPanel.innerHTML = '<div class="reg-error">' + (data.error || 'Error importing registry') + '</div>';
         }
