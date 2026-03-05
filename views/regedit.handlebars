@@ -579,7 +579,7 @@ var regedit = (function() {
     }
 
     function updateTree(keys) {
-        if (!keys || keys.length === 0) return;
+        if (!Array.isArray(keys)) { keys = []; }
         
         // Find the currently selected node (parent)
         var selectedNode = document.querySelector('.reg-tree-node.selected');
@@ -588,22 +588,18 @@ var regedit = (function() {
         var expandIcon = selectedNode.querySelector('.expand-icon');
         var childrenContainer = selectedNode.querySelector('.reg-tree-children');
         
-        // If already expanded (icon is '-'), collapse it
-        if (childrenContainer && expandIcon && expandIcon.textContent === '-') {
-            selectedNode.removeChild(childrenContainer);
-            expandIcon.textContent = '+';
-            return;
-        }
-        
-        // Otherwise, expand and show children
-        if (expandIcon) {
-            expandIcon.textContent = '-';
-        }
-        
         // Remove existing children if any (avoid duplicates)
         if (childrenContainer) {
             selectedNode.removeChild(childrenContainer);
         }
+
+        // Icon state always reflects whether this key currently has child keys.
+        if (expandIcon) {
+            //expandIcon.textContent = (keys.length > 0) ? '-' : '';
+            expandIcon.textContent = '-';
+        }
+
+        if (keys.length === 0) return;
         
         // Create new children container
         childrenContainer = document.createElement('div');
