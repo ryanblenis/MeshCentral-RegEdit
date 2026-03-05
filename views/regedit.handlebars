@@ -603,7 +603,7 @@ var regedit = (function() {
         if (childrenContainer) {
             selectedNode.removeChild(childrenContainer);
         }
-
+        
         // Icon state always reflects whether this key currently has child keys.
         if (expandIcon) {
             //expandIcon.textContent = (keys.length > 0) ? '-' : '';
@@ -611,7 +611,7 @@ var regedit = (function() {
         }
 
         if (keys.length === 0) return;
-        
+               
         // Create new children container
         childrenContainer = document.createElement('div');
         childrenContainer.className = 'reg-tree-children';
