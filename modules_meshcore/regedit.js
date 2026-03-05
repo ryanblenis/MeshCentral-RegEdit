@@ -138,6 +138,7 @@ function doEnumKey(hive, path, sessionid) {
 
     var fullHive = getFullHiveName(hive);
     var psPath = fullHive + (path ? '\\' + path : '');
+	var safePsPath = psPath.replace(/'/g, "''");
 
     dbg('enumKey: hive=' + hive + ', path=' + path + ', fullPath=' + psPath);
 
@@ -157,7 +158,7 @@ function doEnumKey(hive, path, sessionid) {
     psCommand += 'if ($default -ne $null) { $result.values["(Default)"] = @{ value = $default; type = "REG_SZ" } }; ';
     psCommand += '$result | ConvertTo-Json -Compress } else { @{ keys = @(""); values = @{} } | ConvertTo-Json -Compress }';
 
-    psCommand = "$k=Get-Item -Path \"Registry::"+ psPath + "\" -EA 0;if($k){$m=@{String='REG_SZ';ExpandString='REG_EXPAND_SZ';DWord='REG_DWORD';QWord='REG_QWORD';Binary='REG_BINARY';MultiString='REG_MULTI_SZ';None='REG_NONE'};$v=@{};$names=@('') + @($k.GetValueNames()|?{$_ -ne ''});$names|%{$n=$_;$j=if($n){$n}else{'(Default)'};if($n -eq ''){$d=$k.GetValue('', $null);if($null -eq $d){$v[$j]=@{value='(value not set)';type='Empty'}}else{try{$dt=$m[$k.GetValueKind('').ToString()]}catch{$dt='REG_SZ'};$v[$j]=@{value=$d;type=$dt}}}else{$t=$m[$k.GetValueKind($n).ToString()];$v[$j]=@{value=$k.GetValue($n);type=$t}}};$r=@{keys=@($k.GetSubKeyNames());values=$v}}else{$r=@{keys=@();values=@{}}};$r|ConvertTo-Json -Compress";
+    psCommand = "$k=Get-Item -Path 'Registry::"+ safePsPath + "' -EA 0;if($k){$m=@{String='REG_SZ';ExpandString='REG_EXPAND_SZ';DWord='REG_DWORD';QWord='REG_QWORD';Binary='REG_BINARY';MultiString='REG_MULTI_SZ';None='REG_NONE'};$v=[ordered]@{};$names=@('') + @($k.GetValueNames()|?{$_ -ne ''}|Sort-Object);$names|%{$n=$_;$isDefault=($n -eq '');$j=if($isDefault){'(Default)'}else{$n};if($isDefault){$d=$k.GetValue('', $null);if($null -eq $d){$v[$j]=@{value='(value not set)';type='Empty'}}else{try{$dt=$m[$k.GetValueKind('').ToString()]}catch{$dt='REG_SZ'};$v[$j]=@{value=$d;type=$dt}}}else{try{$t=$m[$k.GetValueKind($n).ToString()]}catch{$t='REG_SZ'};$v[$j]=@{value=$k.GetValue($n);type=$t}}};$r=@{keys=@($k.GetSubKeyNames());values=$v}}else{$r=@{keys=@();values=@{}}};$r|ConvertTo-Json -Compress";
     dbg('enumKey PS command: ' + psCommand);
 
     runPowerShell(psCommand, function(err, stdout, stderr) {
