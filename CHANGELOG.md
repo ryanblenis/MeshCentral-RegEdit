@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - None. Please feel free to submit an issue via [GitHub](https://github.com/ryanblenis/MeshCentral-RegEdit) if you find anything.
 
+## [0.0.2] - 2025-03-06
+
+### Added
+
+- Default key visibility (mirroring RegEdit view) - @stephannn
+- Alphabetical ordering of keys/values - @stephannn
+- Remove "-" symbol if no child items
+
 ## [0.0.1] - 2025-02-27
 
 ### Added

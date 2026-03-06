@@ -1,7 +1,7 @@
 {
   "name": "Registry Explorer/Editor",
   "shortName": "regedit",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Ryan Blenis",
   "description": "Windows Registry Explorer and Editor for MeshCentral",
   "hasAdminPanel": false,

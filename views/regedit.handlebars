@@ -91,6 +91,8 @@
 #pluginRegeditContent .reg-tree-node.selected {
     background: transparent;
     color: #0066cc;
+}
+#pluginRegeditContent .reg-tree-node.selected:not(:empty) {
     outline: 1px solid #0066cc;
 }
 
@@ -324,6 +326,17 @@ var regedit = (function() {
     var pendingOperation = null;
     var currentValues = {}; // Store current values for edit context
     var uSids = null;
+
+    function getDirectChildrenContainer(node) {
+        if (!node || !node.children) return null;
+        for (var i = 0; i < node.children.length; i++) {
+            var child = node.children[i];
+            if (child.classList && child.classList.contains('reg-tree-children')) {
+                return child;
+            }
+        }
+        return null;
+    }
 
     function init() {
         loadHives();
@@ -579,7 +592,7 @@ var regedit = (function() {
     }
 
     function updateTree(keys) {
-        if (!keys || keys.length === 0) return;
+        if (!Array.isArray(keys)) { keys = []; }
         
         // Find the currently selected node (parent)
         var selectedNode = document.querySelector('.reg-tree-node.selected');
@@ -588,23 +601,19 @@ var regedit = (function() {
         var expandIcon = selectedNode.querySelector('.expand-icon');
         var childrenContainer = selectedNode.querySelector('.reg-tree-children');
         
-        // If already expanded (icon is '-'), collapse it
-        if (childrenContainer && expandIcon && expandIcon.textContent === '-') {
-            selectedNode.removeChild(childrenContainer);
-            expandIcon.textContent = '+';
-            return;
-        }
-        
-        // Otherwise, expand and show children
-        if (expandIcon) {
-            expandIcon.textContent = '-';
-        }
-        
         // Remove existing children if any (avoid duplicates)
         if (childrenContainer) {
             selectedNode.removeChild(childrenContainer);
         }
         
+        // Icon state always reflects whether this key currently has child keys.
+        if (expandIcon) {
+            expandIcon.textContent = (keys.length > 0) ? '-' : '';
+            //expandIcon.textContent = '-';
+        }
+
+        if (keys.length === 0) return;
+               
         // Create new children container
         childrenContainer = document.createElement('div');
         childrenContainer.className = 'reg-tree-children';
@@ -626,6 +635,13 @@ var regedit = (function() {
             var expandIcon = node.querySelector('.expand-icon');
             expandIcon.onclick = function(e) {
                 e.stopPropagation();
+                var iconState = (this.textContent || '').trim();
+                var childrenContainer = getDirectChildrenContainer(this.parentNode);
+                if (iconState === '-' && childrenContainer) {
+                    this.parentNode.removeChild(childrenContainer);
+                    this.textContent = '+';
+                    return;
+                }
                 selectHive(this.parentNode.dataset.hive, this.parentNode.dataset.path);
             };
             
